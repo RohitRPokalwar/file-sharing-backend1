@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Sharing App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            text-align: center;
+        }
+        input, button {
+            margin-top: 10px;
+            padding: 10px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Upload File</h2>
+        <input type="file" id="fileInput">
+        <button onclick="uploadFile()">Upload</button>
+        <p id="fileId"></p>
+    </div>
+
+    <div class="container" style="margin-top: 20px;">
+        <h2>Download File</h2>
+        <input type="text" id="fileIdInput" placeholder="Enter File ID">
+        <button onclick="downloadFile()">Download</button>
+    </div>
+
+    <script>
+        const serverUrl = "https://file-sharing-backend-tiu7.onrender.com"; // Update with your server URL if deployed
+
+        async function uploadFile() {
+            const fileInput = document.getElementById("fileInput");
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                const formData = new FormData();
+                formData.append("file", file);
+
+                try {
+                    const response = await fetch(`${serverUrl}/upload`, {
+                        method: "POST",
+                        body: formData
+                    });
+
+                    const result = await response.json();
+                    if (result.fileId) {
+                        document.getElementById("fileId").innerText = `Your File ID: ${result.fileId}`;
+                    }
+                } catch (error) {
+                    console.error("Error uploading file:", error);
+                }
+            }
+        }
+
+        function downloadFile() {
+            const fileId = document.getElementById("fileIdInput").value.trim();
+            if (fileId) {
+                window.location.href = `${serverUrl}/download/${fileId}`;
+            } else {
+                alert("Please enter a valid File ID.");
+            }
+        }
+    </script>
+
+</body>
+</html>
